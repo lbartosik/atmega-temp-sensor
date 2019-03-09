@@ -7,7 +7,7 @@
 #include "1wire_drv.h" 
 #include "usart_drv.h"
 
-static temp_sensor_ctrl_t temp_sensor_ctrl;
+temp_sensor_ctrl_t temp_sensor_ctrl;
 
 u8 read_scratch_pad(void)
 {

@@ -271,15 +271,28 @@ static void delay_test_cmd(usart_ctrl_t* usart_ctrl)
 	usart_send(usart_ctrl);	
 }
 
+extern temp_sensor_ctrl_t temp_sensor_ctrl;
+
 static void read_scratchpad_cmd(usart_ctrl_t* usart_ctrl)
 {
 	static char response[] PROGMEM = "is_present = %d, temp = %d.%d(0x%x), resol = %dbits(0x%x)\n->";
+	static char response1[] PROGMEM = "b0=%x, b1=%x, b2=%x, b3=%x, b4=%x, b5=%x, b6=%x, b7=%x, b8=%x\n->";
 	u8 is_present = FALSE;
 	
 	is_present = read_scratch_pad();			
 		
-	snprintf_P((char*) usart_ctrl->tx_buf, USART_TX_BUF_SIZE, response, is_present, get_temp_value_int(), get_temp_value_frac(), get_temp_value_raw(), get_temp_resolution(), get_temp_config());
+	snprintf_P((char*) usart_ctrl->tx_buf, USART_TX_BUF_SIZE, response, is_present, get_temp_value_int(), get_temp_value_frac(), get_temp_value_raw(), get_temp_resolution(), get_temp_config());	
 	usart_send(usart_ctrl);	
+	
+	
+	u8 tmp;
+	memcpy(&tmp, &temp_sensor_ctrl.scratchpad.config_reg, 1);
+	snprintf_P((char*) usart_ctrl->tx_buf, USART_TX_BUF_SIZE, response1, temp_sensor_ctrl.scratchpad.temp_lsb, temp_sensor_ctrl.scratchpad.temp_msb,
+				temp_sensor_ctrl.scratchpad.temp_h_reg, temp_sensor_ctrl.scratchpad.temp_l_reg, tmp, 
+				(u8) temp_sensor_ctrl.scratchpad.reserved[0], temp_sensor_ctrl.scratchpad.reserved[1], temp_sensor_ctrl.scratchpad.reserved[2],
+				temp_sensor_ctrl.scratchpad.crc);
+	usart_send(usart_ctrl);
+
 }
 
 static void init_temp_conversion_cmd(usart_ctrl_t* usart_ctrl)

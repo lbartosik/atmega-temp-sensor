@@ -36,11 +36,10 @@ int main(void)
 	write_byte(CONTROL_CMD, 0x0C);
 	for (i = 0; i < 20; i++)
 		write_byte(DATA_CMD, 0xDD);
-
 	*/
-		 
+			 
     // initialize usart   	
-	usart_init();	
+	//usart_init();	
 		
 	// configure temperature sensor and initialize first temperature conversions
 	read_scratch_pad();
@@ -58,15 +57,14 @@ int main(void)
 	update_temperature_on_lcd(FALSE);
 	
 	// setup timer2 async operation
-	//setup_timer2_asynch();
+	setup_timer2_asynch();
 				
 	while(TRUE)
-    {	
-		/*while ((UCSR0B & (1 << UDRIE0)) > 0);
-		_delay_ms(10);
+    {			
+		//while ((UCSR0B & (1 << UDRIE0)) > 0);				
+		//_delay_ms(10);
 	
-		enter_sleep_mode();	         
-		*/
+		enter_sleep_mode();	         	
     } 
 	
     return 0; 
@@ -94,7 +92,7 @@ void update_temperature_on_lcd(u8 force_update)
 		force_update)
 	{	
 		abs_val = abs(new_temp_value_int);
-		if (new_temp_value_int > 0)
+		if (new_temp_value_int >= 0)
 			temp_str[0] = '+';
 		else
 			temp_str[0] = '-';
